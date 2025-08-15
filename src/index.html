@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeatherNow - Your Local Weather Forecast</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="/weather-icon.png">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <div class="logo">
+                    <i class="fas fa-cloud-sun"></i>
+                    <h1>WeatherNow</h1>
+                </div>
+            </div>
+            <div class="search-container">
+                <div class="search-wrapper">
+                    <input type="text" id="cityInput" placeholder="Enter city name..." class="search-input">
+                    <button id="searchBtn" class="search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <div id="searchSuggestions" class="search-suggestions hidden">
+                        <!-- Search suggestions will be populated by JavaScript -->
+                    </div>
+                </div>
+                <button id="locationBtn" class="location-btn" title="Use current location">
+                    <i class="fas fa-location-crosshairs"></i>
+                </button>
+                <button id="themeToggle" class="theme-toggle" title="Toggle light/dark mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button id="favoritesBtn" class="favorites-btn" title="View favorite locations">
+                    <i class="fas fa-star"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Loading Spinner -->
+            <div id="loading" class="loading hidden">
+                <div class="spinner"></div>
+                <p>Loading weather data...</p>
+            </div>
+
+            <!-- Error Message -->
+            <div id="error" class="error hidden">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p id="errorMessage">Something went wrong. Please try again.</p>
+            </div>
+
+            <!-- Weather Display -->
+            <div id="weatherDisplay" class="weather-display hidden">
+                <!-- Current Weather -->
+                <section class="current-weather">
+                    <div class="current-info">
+                        <div class="location-info">
+                            <div class="location-header">
+                                <h2 id="currentLocation">New York, NY</h2>
+                                <button id="favoriteBtn" class="favorite-btn" title="Add to favorites">
+                                    <i class="far fa-heart"></i>
+                                </button>
+                            </div>
+                            <p id="currentDate">Monday, January 15, 2024</p>
+                        </div>
+                        <div class="temperature-display">
+                            <div class="temp-main">
+                                <span id="currentTemp">22</span>
+                                <span class="temp-unit">°C</span>
+                            </div>
+                            <div class="temp-details">
+                                <p>Feels like <span id="feelsLike">25°C</span></p>
+                                <p id="weatherDescription">Partly cloudy</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="weather-icon-container">
+                        <div id="weatherIcon" class="weather-icon">
+                            <i class="fas fa-sun"></i>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Air Quality Index -->
+                <section class="aqi-section">
+                    <h3>Air Quality Index</h3>
+                    <div class="aqi-overview">
+                        <div class="aqi-value-container">
+                            <div id="aqiValue" class="aqi-value">--</div>
+                            <div class="aqi-info">
+                                <span id="aqiCategory" class="aqi-category">Loading...</span>
+                                <p class="aqi-description">Air quality data</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="aqi-pollutants">
+                        <div class="pollutant-item">
+                            <i class="fas fa-smog"></i>
+                            <div class="pollutant-info">
+                                <span class="pollutant-label">PM2.5</span>
+                                <span id="pm25" class="pollutant-value">-- μg/m³</span>
+                            </div>
+                        </div>
+                        <div class="pollutant-item">
+                            <i class="fas fa-cloud"></i>
+                            <div class="pollutant-info">
+                                <span class="pollutant-label">SO₂</span>
+                                <span id="so2" class="pollutant-value">-- μg/m³</span>
+                            </div>
+                        </div>
+                        <div class="pollutant-item">
+                            <i class="fas fa-industry"></i>
+                            <div class="pollutant-info">
+                                <span class="pollutant-label">NO₂</span>
+                                <span id="no2" class="pollutant-value">-- μg/m³</span>
+                            </div>
+                        </div>
+                        <div class="pollutant-item">
+                            <i class="fas fa-leaf"></i>
+                            <div class="pollutant-info">
+                                <span class="pollutant-label">O₃</span>
+                                <span id="o3" class="pollutant-value">-- μg/m³</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Sunrise & Sunset -->
+                <section class="sun-times">
+                    <h3>Sun Times</h3>
+                    <div class="sun-times-container">
+                        <div class="sun-time-item">
+                            <div class="sun-icon sunrise-icon">
+                                <i class="fas fa-sun"></i>
+                                <div class="sun-rays">
+                                    <div class="ray ray-1"></div>
+                                    <div class="ray ray-2"></div>
+                                    <div class="ray ray-3"></div>
+                                    <div class="ray ray-4"></div>
+                                </div>
+                            </div>
+                            <div class="sun-info">
+                                <span class="sun-label">Sunrise</span>
+                                <span id="sunriseTime" class="sun-time">06:30 AM</span>
+                            </div>
+                        </div>
+                        <div class="sun-progress">
+                            <div class="sun-track">
+                                <div id="sunPosition" class="sun-position"></div>
+                            </div>
+                            <div class="sun-labels">
+                                <span>Dawn</span>
+                                <span>Noon</span>
+                                <span>Dusk</span>
+                            </div>
+                        </div>
+                        <div class="sun-time-item">
+                            <div class="sun-icon sunset-icon">
+                                <i class="fas fa-moon"></i>
+                                <div class="moon-phases">
+                                    <div class="phase phase-1"></div>
+                                    <div class="phase phase-2"></div>
+                                </div>
+                            </div>
+                            <div class="sun-info">
+                                <span class="sun-label">Sunset</span>
+                                <span id="sunsetTime" class="sun-time">07:45 PM</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Weather Details -->
+                <section class="weather-details">
+                    <h3>Weather Details</h3>
+                    <div class="details-grid">
+                        <div class="detail-item">
+                            <i class="fas fa-eye"></i>
+                            <div class="detail-info">
+                                <span class="detail-label">Visibility</span>
+                                <span id="visibility" class="detail-value">10 km</span>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-tint"></i>
+                            <div class="detail-info">
+                                <span class="detail-label">Humidity</span>
+                                <span id="humidity" class="detail-value">65%</span>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-wind"></i>
+                            <div class="detail-info">
+                                <span class="detail-label">Wind Speed</span>
+                                <span id="windSpeed" class="detail-value">12 km/h</span>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-thermometer-half"></i>
+                            <div class="detail-info">
+                                <span class="detail-label">Pressure</span>
+                                <span id="pressure" class="detail-value">1013 hPa</span>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-sun"></i>
+                            <div class="detail-info">
+                                <span class="detail-label">UV Index</span>
+                                <span id="uvIndex" class="detail-value">5</span>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-cloud"></i>
+                            <div class="detail-info">
+                                <span class="detail-label">Cloud Cover</span>
+                                <span id="cloudCover" class="detail-value">40%</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Hourly Forecast -->
+                <section class="hourly-forecast">
+                    <h3>24-Hour Forecast</h3>
+                    <div class="hourly-container">
+                        <!-- Hourly forecast items will be generated by JavaScript -->
+                    </div>
+                </section>
+
+                <!-- 5-Day Forecast -->
+                <section class="forecast">
+                    <h3>5-Day Forecast</h3>
+                    <div class="forecast-container">
+                        <div class="forecast-item">
+                            <div class="forecast-day">Today</div>
+                            <div class="forecast-icon">
+                                <i class="fas fa-sun"></i>
+                            </div>
+                            <div class="forecast-temps">
+                                <span class="high-temp">25°</span>
+                                <span class="low-temp">18°</span>
+                            </div>
+                        </div>
+                        <div class="forecast-item">
+                            <div class="forecast-day">Tomorrow</div>
+                            <div class="forecast-icon">
+                                <i class="fas fa-cloud-sun"></i>
+                            </div>
+                            <div class="forecast-temps">
+                                <span class="high-temp">23°</span>
+                                <span class="low-temp">16°</span>
+                            </div>
+                        </div>
+                        <div class="forecast-item">
+                            <div class="forecast-day">Wednesday</div>
+                            <div class="forecast-icon">
+                                <i class="fas fa-cloud-rain"></i>
+                            </div>
+                            <div class="forecast-temps">
+                                <span class="high-temp">20°</span>
+                                <span class="low-temp">14°</span>
+                            </div>
+                        </div>
+                        <div class="forecast-item">
+                            <div class="forecast-day">Thursday</div>
+                            <div class="forecast-icon">
+                                <i class="fas fa-cloud"></i>
+                            </div>
+                            <div class="forecast-temps">
+                                <span class="high-temp">22°</span>
+                                <span class="low-temp">15°</span>
+                            </div>
+                        </div>
+                        <div class="forecast-item">
+                            <div class="forecast-day">Friday</div>
+                            <div class="forecast-icon">
+                                <i class="fas fa-sun"></i>
+                            </div>
+                            <div class="forecast-temps">
+                                <span class="high-temp">26°</span>
+                                <span class="low-temp">19°</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Favorites Modal -->
+        <div id="favoritesModal" class="favorites-modal hidden">
+            <div class="favorites-content">
+                <div class="favorites-header">
+                    <h3>Favorite Locations</h3>
+                    <button id="closeFavorites" class="close-btn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div id="favoritesList" class="favorites-list">
+                    <div class="no-favorites">
+                        <i class="far fa-heart"></i>
+                        <p>No favorite locations yet</p>
+                        <span>Add locations to your favorites by clicking the heart icon</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2025 WeatherNow. Built with love for weather enthusiasts.</p>
+        </footer>
+    </div>
+
+    <script>
+        window.WEATHER_API_KEY = '7fea4094e582740ad41cb74672dfabfd';
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
