@@ -2,7 +2,7 @@
 
 A beautiful, responsive weather website built with HTML, CSS, and JavaScript. Features real-time weather data, 5-day forecasts, and an elegant glassmorphism design.
 
-![WeatherNow Screenshot](https://via.placeholder.com/800x400/667eea/ffffff?text=WeatherNow+Weather+App)
+![WeatherNow Screenshot](https://github.com/SahilKundu19/WeatherNow/blob/bb10a053be5669157f6dfcd662802bdf646c7063/WeatherNow-image.png)
 
 ## Features
 
